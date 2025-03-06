@@ -4,8 +4,8 @@ from django import forms
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Email Address'}),required=True)
-    first_name = forms.CharField(max_length=30, required=True, help_text='Optional.',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Email Address'}))
-    last_name = forms.CharField(max_length=30, required=False, help_text='Optional.',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Email Address'}))
+    first_name = forms.CharField(max_length=30, required=True, help_text='Required.',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'First Name'}))
+    last_name = forms.CharField(max_length=30, required=False, help_text='Required',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Second Name'}))
     class Meta:
         model = User
         fields = ['username','first_name','last_name','email','password1','password2']
@@ -26,4 +26,5 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '<span class="form-text text-muted">Enter the same password as before, for verification.</span>'    
+        
 

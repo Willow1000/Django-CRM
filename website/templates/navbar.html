@@ -8,11 +8,17 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {% if user.is_authenticated %}
           <li>
-            <a class="nav-link" href={% url 'logout' %}>Logout</a>
+            <a class="nav-link" href={% url 'logout' %} title="logout">Logout</a>
+          </li>
+          <li>
+            <a class="nav-link" href={% url 'records' %} title="RECORDS">Records</a>
+          </li>
+          <li>
+            <a class="nav-link" href={% url 'create' %} title="RECORDS">Create Record</a>
           </li>
           {% else %}
           <li>
-            <a class="nav-link" href={% url 'home' %}>Login</a>
+            <a class="nav-link" href={% url 'home' %} title='login'>Login</a>
           </li>
           <li>
             <a class="nav-link" href={% url 'register' %}>Register</a>
@@ -20,8 +26,8 @@
 
           {%endif%}
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <form class="d-flex" role="search" action="{% url 'records' %}" method="GET">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q",value="{{ request.GET.q| default:'' }}">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
       </div>

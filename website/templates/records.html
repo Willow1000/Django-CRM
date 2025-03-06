@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Records{% endblock %}
+{% block content %}
+{% if records %}
+<table class="table mt-5 min-w-75 table-striped table-bordered table-hover">
+    <caption>List of Records</caption>
+    <thead class="table-dark">
+        
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Email Address</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">City</th>
+            <th scope="col">Address</th>
+            <th scope="col">Zip Code</th>
+        </tr>
+    </thead>
+
+   
+        <tbody 
+        class="table-group-divider">
+            {% for record in records %}
+            <a href="/"class="cursor-pointer">
+                <tr onclick="window.location.href='{% url 'record' record.id %}';" style="cursor: pointer;">
+                    <td>{{ record.id }}</td>
+                    <td>{{ record.first_name }}</td>
+                    <td>{{ record.last_name }}</td>
+                    <td>{{ record.email }}</td>
+                    <td>{{ record.phone }}</td>
+                    <td>{{ record.city }}</td>
+                    <td>{{ record.address }}</td>
+                    <td>{{ record.zip_code }}</td>
+                </tr>
+                {% endfor %}
+            </a>
+        </tbody>
+    
+</table>
+ 
+
+{% else %}
+    <h1>No Records Found</h1>
+    <a href="{% url 'create' %}"><button class="btn btn-secondary">Create Record</button></a>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <a href="{% url 'create' %}"><button class="btn btn-secondary">Create Record</button></a>
+    {% else %}
+    <a href="{% url 'login' %}"><button class="btn btn-secondary">Login</button></a>
+{% endif %}    
+{% endblock %}

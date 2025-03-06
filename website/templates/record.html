@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Record{% endblock %}
+{% block content %}
+{% if record %}
+<div class="card mt-5" style="min-width: 70%; min-height: 80svh;">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'records' %}"><button class="btn btn-secondary">Records</button></a>
+            <h2 class="card-title">Card title</h2>
+        </div>
+        <br><br>
+        <section class="d-flex flex-column gap-3">
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Record ID: </p>
+                <p>{{ record.id }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">First Name: </p>
+                <p>{{ record.first_name }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Last Name: </p>
+                <p>{{ record.last_name }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Email: </p>
+                <p>{{ record.email }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Phone: </p>
+                <p>{{ record.phone }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">City: </p>
+                <p>{{ record.city }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Address: </p>
+                <p>{{ record.address }}</p>
+            </article>
+            <article class="card-text d-flex justify-content-between">
+                <p class="card-text">Zip Code: </p>
+                <p>{{ record.zip_code }}</p>
+            </article>
+        </section>
+    </div>
+
+    <div class="d-flex align-items-center gap-4 mb-3 justify-content-center">
+        <a href="{% url 'update' record.id %}">
+            <button class="btn btn-warning">Edit</button>
+        </a>
+        
+        <!-- Delete button triggers modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            Delete
+        </button>
+    </div>
+</div>
+
+<!-- Bootstrap Modal for Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="delete-form" action="{% url 'delete' record.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div>
+    <h1>Record</h1>
+    <p>Record not found</p>
+    <a href="{% url 'records' %}" class="btn btn-secondary">Back to Records</a>
+</div>
+{% endif %}
+
+{% endblock %}
