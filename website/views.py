@@ -7,6 +7,8 @@ from django.views.generic import ListView,DetailView,UpdateView,DeleteView,Creat
 from .models import Record
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin,UserPassesTestMixin
+from .models import User
 
 # Create your views here.
 
@@ -34,7 +36,9 @@ def register_user(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save(commit='False')
+            user.role='viewer'
+            user.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
@@ -50,7 +54,7 @@ def register_user(request):
 
     return render(request, 'register.html', {'form': form})  # Always return an HttpResponse
 
-class ListRecords(LoginRequiredMixin,ListView):
+class ListRecords(UserPassesTestMixin,LoginRequiredMixin,ListView):
     model = Record
     template_name = 'records.html'
     context_object_name = 'records'
@@ -61,21 +65,29 @@ class ListRecords(LoginRequiredMixin,ListView):
         if query:
             return Record.objects.filter(first_name__icontains=query) | Record.objects.filter(last_name__icontains=query) | Record.objects.filter(email__icontains=query) | Record.objects.filter(phone__icontains=query) | Record.objects.filter(address__icontains=query) | Record.objects.filter(city__icontains=query) | Record.objects.filter(zip_code__icontains=query)
         return Record.objects.all()
+    def test_func(self):
+        return self.request.user.role == 'viewer' or self.request.user.role == 'editor' or self.request.role == 'admin'
 
-class GetRecord(LoginRequiredMixin,DetailView):
+class GetRecord(UserPassesTestMixin,LoginRequiredMixin,DetailView):
     model = Record
     template_name = 'record.html'
     context_object_name = 'record'
     login_url=reverse_lazy('home')
+    def test_func(self):
+        return self.request.user.role == 'viewer' or self.request.user.role == 'editor' or self.request.user.role == 'admin'
 
 
-class DeleteRecord(LoginRequiredMixin,DeleteView):
+class DeleteRecord(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
     model=Record
     template_name='record.html'
     context_object_name='record'    
     success_url=reverse_lazy('records')
+    
+    def test_func(self):
+        return self.request.user.role == 'editor' or self.request.user.role == 'admin'
 
-class UpdateRecord(LoginRequiredMixin,UpdateView):
+
+class UpdateRecord(UserPassesTestMixin,LoginRequiredMixin,UpdateView):
     model=Record
     fields=['first_name','last_name','email','phone','address','city','zip_code']
     
@@ -83,9 +95,16 @@ class UpdateRecord(LoginRequiredMixin,UpdateView):
     context_object_name='record'
     success_url=reverse_lazy('records')
 
+    def test_func(self):
+        return self.request.user.role == 'editor' or self.request.user.role == 'admin'
 
-class CreateRecord(LoginRequiredMixin,CreateView):
+
+class CreateRecord(PermissionRequiredMixin,LoginRequiredMixin,CreateView):
     model=Record
     fields=['first_name','last_name','email','phone','address','city','zip_code']
     template_name='create.html'
     success_url=reverse_lazy('records')
+    permission_required = 'add_record'
+    
+    def test_func(self):
+        return self.request.user.role == 'editor' or self.request.user.role == 'admin'
